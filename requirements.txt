@@ -2,3 +2,5 @@ Django==2.2.5
 djangorestframework==3.10.3
 celery==4.3.0
 psycopg2==2.8.3
+pdfminer.six==20181108
+chardet==3.0.4
