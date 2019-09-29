@@ -7,13 +7,15 @@ from pdfminer.layout import LAParams
 from pdfminer.pdfpage import PDFPage
 
 from .models import CV, Experience, Company, Skill
+from resume.celeryconfig import celery_app
 
 
 RE_DATE = r'\d{4}-\d{2}-\d{2}'
-RE_PATTERN = rf'(\w+.*?) \(({RE_DATE})-({RE_DATE}); (.*?)\)\.'
+RE_PATTERN = rf'(\w+.*?) \(({RE_DATE}) - ({RE_DATE}); (.*?)\)\.'
 
 
-def pdf_to_text(path):
+@celery_app.task(name='pdf_to_text')
+def pdf_to_text(path=None):
     manager = PDFResourceManager()
     retstr = BytesIO()
     layout = LAParams(all_texts=True)
@@ -29,9 +31,11 @@ def pdf_to_text(path):
     filepath.close()
     device.close()
     retstr.close()
-    return text
+
+    parse_text.delay(text.decode())
 
 
+@celery_app.task(name='parse_text')
 def parse_text(text):
     titles = ('First Name', 'Last Name', 'Skills', 'About', 'Experience')
     lines = text.split('\n')
@@ -58,9 +62,10 @@ def parse_text(text):
         for m in match:
             companies.append(m)
 
-    insert_data(first_name, last_name, skills, about, companies)
+    insert_data.delay(first_name, last_name, skills, about, companies)
 
 
+@celery_app.task(name='insert_data')
 def insert_data(first_name, last_name, skills, about, companies):
     cv, _ = CV.objects.update_or_create(first_name=first_name, last_name=last_name, defaults={'about': about})
 
