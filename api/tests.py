@@ -8,9 +8,9 @@ class TestParseText(unittest.TestCase):
         import re
         from .tasks import RE_PATTERN
 
-        test_string = 'A-B Company (04/30/1111-07/26/2222; laboris nisi ut aliquipc,fdmf2f ea commodo conse).'
+        test_string = 'A-B Company (2015-01-11 - 2018-07-26; laboris nisi ut aliquipc,fdmf2f ea commodo conse).'
 
         match = re.findall(RE_PATTERN, test_string)
         if match:
-            self.assertEqual(match, [('A-B Company', '04/30/1111', '07/26/2222',
+            self.assertEqual(match, [('A-B Company', '2015-01-11', '2018-07-26',
                                       'laboris nisi ut aliquipc,fdmf2f ea commodo conse')])

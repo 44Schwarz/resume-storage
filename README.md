@@ -2,7 +2,7 @@
 ### Initial configuration (do just once)
 ##### Install packages
 ```
-sudo apt-get install python3-pip python3-dev libpq-dev postgresql postgresql-contrib
+sudo apt-get install python3-pip python3-dev libpq-dev postgresql postgresql-contrib rabbitmq-server
 ```
 ##### Create a database and configure it
 ```bash
@@ -22,4 +22,17 @@ GRANT ALL PRIVILEGES ON DATABASE resume_storage TO resume_user;
 python3 -m venv ./env
 source env/bin/activate
 pip install -r requirements.txt
+```
+### Run project
+```
+source env/bin/activate
+python manage.py migrate
+python manage.py runserver
+celery -A resume worker --loglevel=INFO
+```
+* Make sure postgres and rabbitmq are running
+* Change (if necessary) FILE_PATH_FIELD_DIRECTORY in settings.py to a directory where cv files are stored
+* To upload a CV (an example of a format can be found in this repository) make a POST request with a full filepath
+```
+curl -X POST -d '{"cv_file": "/tmp/cvs/cv_example.pdf"}' -H "Content-Type: application/json" 127.0.0.1:8000/api/upload/
 ```
