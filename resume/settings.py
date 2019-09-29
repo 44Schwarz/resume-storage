@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import logging
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -132,3 +133,34 @@ CELERY_BROKER_URL = 'amqp://localhost'
 CELERY_RESULT_BACKEND = 'amqp://localhost'
 
 FILE_PATH_FIELD_DIRECTORY = '/tmp/cvs'
+
+# LOGGING
+LOG_LEVEL = os.environ.get('LOG_LEVEL', 'info').upper()
+LOG_DIR = os.environ.get('LOG_DIR', BASE_DIR)
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(asctime)s - %(filename)s - %(name)s - %(levelname)s - %(funcName)s '
+                      'Line:%(lineno)d  - %(message)s'
+        },
+        'simple': {
+            'format': '%(asctime)s - %(levelname)s - %(message)s'
+        },
+    },
+    'handlers': {
+        'api': {
+            'level': LOG_LEVEL,
+            'class': 'logging.handlers.WatchedFileHandler',
+            'filename': os.path.join(LOG_DIR, 'resume-storage.log'),
+            'formatter': 'verbose'
+        },
+    },
+    'loggers': {
+        'api': {
+            'level': LOG_LEVEL,
+            'handlers': ['api']
+        },
+    }
+}

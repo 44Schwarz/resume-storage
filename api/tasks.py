@@ -1,4 +1,5 @@
 import re
+import logging
 from io import BytesIO
 
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
@@ -12,6 +13,8 @@ from resume.celeryconfig import celery_app
 
 RE_DATE = r'\d{4}-\d{2}-\d{2}'
 RE_PATTERN = rf'(\w+.*?) \(({RE_DATE}) - ({RE_DATE}); (.*?)\)\.'
+
+api_logger = logging.getLogger('api')
 
 
 @celery_app.task(name='pdf_to_text')
@@ -32,6 +35,7 @@ def pdf_to_text(path=None):
     device.close()
     retstr.close()
 
+    api_logger.info(f"{path} was successfully converted to text")
     parse_text.delay(text.decode())
 
 
@@ -67,7 +71,8 @@ def parse_text(text):
 
 @celery_app.task(name='insert_data')
 def insert_data(first_name, last_name, skills, about, companies):
-    cv, _ = CV.objects.update_or_create(first_name=first_name, last_name=last_name, defaults={'about': about})
+    cv, created = CV.objects.update_or_create(first_name=first_name, last_name=last_name, defaults={'about': about})
+    api_logger.debug(f"New CV ({cv}) was created: {created}")
 
     for skill in skills:
         skill_obj, _ = Skill.objects.get_or_create(name=skill)
