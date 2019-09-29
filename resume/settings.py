@@ -130,3 +130,5 @@ STATIC_URL = '/static/'
 # For RabbitMQ
 CELERY_BROKER_URL = 'amqp://localhost'
 CELERY_RESULT_BACKEND = 'amqp://localhost'
+
+FILE_PATH_FIELD_DIRECTORY = '/tmp/cvs'

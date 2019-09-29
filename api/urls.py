@@ -8,9 +8,9 @@ router.register(r'cvs', views.ResumeViewSet)
 router.register(r'skills', views.SkillViewSet)
 router.register(r'experiences', views.ExperienceViewSet)
 router.register(r'companies', views.CompanyViewSet)
+router.register(r'upload', views.UploadViewSet)
 
 
 urlpatterns = [
     path('', include(router.urls)),
-    # path('upload/', )
 ]

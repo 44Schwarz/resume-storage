@@ -1,7 +1,7 @@
 from rest_framework import viewsets, filters
 
-from .models import CV, Skill, Experience, Company
-from .serializers import CVSerializer, SkillSerializer, ExperienceSerializer, CompanySerializer
+from .models import CV, Skill, Experience, Company, Upload
+from .serializers import CVSerializer, SkillSerializer, ExperienceSerializer, CompanySerializer, UploadSerializer
 
 
 # Create your views here.
@@ -26,3 +26,8 @@ class ExperienceViewSet(viewsets.ModelViewSet):
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all().order_by('id')
     serializer_class = CompanySerializer
+
+
+class UploadViewSet(viewsets.ModelViewSet):
+    queryset = Upload.objects.all().order_by('id')
+    serializer_class = UploadSerializer

@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 
 # Create your models here.
@@ -35,3 +36,7 @@ class Company(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Upload(models.Model):
+    cv_file = models.FilePathField(path=settings.FILE_PATH_FIELD_DIRECTORY)

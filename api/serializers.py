@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from .models import CV, Skill, Experience, Company
+from .models import CV, Skill, Experience, Company, Upload
+from .tasks import pdf_to_text
 
 
 class SkillSerializer(serializers.HyperlinkedModelSerializer):
@@ -77,3 +78,14 @@ class CVSerializer(serializers.HyperlinkedModelSerializer):
         instance.save()
 
         return instance
+
+
+class UploadSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = Upload
+        fields = '__all__'
+
+    def create(self, validated_data):
+        pdf_to_text.delay(validated_data.get('cv_file'))
+        return Upload.objects.create(**validated_data)
