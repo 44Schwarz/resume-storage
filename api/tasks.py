@@ -6,7 +6,10 @@ from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
 from pdfminer.pdfpage import PDFPage
 
-RE_DATE = r'\d{2}/\d{2}/\d{4}'
+from .models import CV, Experience, Company, Skill
+
+
+RE_DATE = r'\d{4}-\d{2}-\d{2}'
 RE_PATTERN = rf'(\w+.*?) \(({RE_DATE})-({RE_DATE}); (.*?)\)\.'
 
 
@@ -54,3 +57,20 @@ def parse_text(text):
     if match:
         for m in match:
             companies.append(m)
+
+    insert_data(first_name, last_name, skills, about, companies)
+
+
+def insert_data(first_name, last_name, skills, about, companies):
+    cv, _ = CV.objects.update_or_create(first_name=first_name, last_name=last_name, defaults={'about': about})
+
+    for skill in skills:
+        skill_obj, _ = Skill.objects.get_or_create(name=skill)
+        cv.skill.add(skill_obj)
+        cv.save()
+
+    for company in companies:  # company = ('Company Name', '2015-01-11', '2018-07-26', 'Description') - example
+        company_obj, _ = Company.objects.get_or_create(name=company[0])
+        Experience.objects.update_or_create(company=company_obj, resume=cv,
+                                            defaults={'date_start': company[1], 'date_end': company[2],
+                                                      'description': company[3]})
