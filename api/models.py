@@ -1,5 +1,6 @@
+import os
+
 from django.db import models
-from django.conf import settings
 
 
 # Create your models here.
@@ -38,5 +39,9 @@ class Company(models.Model):
         return self.name
 
 
+# TODO build a relation between CV files and CV objects
 class Upload(models.Model):
-    cv_file = models.FilePathField(path=settings.FILE_PATH_FIELD_DIRECTORY)
+    cv_file = models.FileField(upload_to='cvs')
+
+    def __str__(self):
+        return os.path.basename(self.cv_file.name)

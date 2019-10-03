@@ -1,5 +1,7 @@
 from rest_framework import viewsets, filters
 
+from .tasks import pdf_to_text
+
 from .models import CV, Skill, Experience, Company, Upload
 from .serializers import CVSerializer, SkillSerializer, ExperienceSerializer, CompanySerializer, UploadSerializer
 
@@ -10,7 +12,7 @@ class ResumeViewSet(viewsets.ModelViewSet):
     serializer_class = CVSerializer
 
     filter_backends = (filters.SearchFilter, )
-    search_fields = ('skill__name', 'experience__company__name')  # TODO search by company name is enough?
+    search_fields = ('skill__name', 'experience__company__name')
 
 
 class SkillViewSet(viewsets.ModelViewSet):
@@ -31,3 +33,11 @@ class CompanyViewSet(viewsets.ModelViewSet):
 class UploadViewSet(viewsets.ModelViewSet):
     queryset = Upload.objects.all().order_by('id')
     serializer_class = UploadSerializer
+
+    def perform_create(self, serializer):
+        new_obj = serializer.save()
+        pdf_to_text.delay(new_obj.cv_file.path)
+
+    def perform_update(self, serializer):
+        new_obj = serializer.save()
+        pdf_to_text.delay(new_obj.cv_file.path)

@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
             name='Upload',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('cv_file', models.FilePathField(path='tmp/cvs')),
+                ('cv_file', models.FileField(upload_to='cvs')),
             ],
         ),
         migrations.CreateModel(

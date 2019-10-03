@@ -32,7 +32,7 @@ celery -A resume worker --loglevel=INFO
 ```
 * Make sure postgres and rabbitmq are running
 * Change (if necessary) FILE_PATH_FIELD_DIRECTORY in settings.py to a directory where cv files are stored
-* To upload a CV (an example of a format can be found in this repository) make a POST request with a full filepath
+* To upload a CV (an example of a format can be found in this repository) make a POST request with a filepath
 ```
-curl -X POST -d '{"cv_file": "/tmp/cvs/cv_example.pdf"}' -H "Content-Type: application/json" 127.0.0.1:8000/api/upload/
+curl -X POST -F "cv_file=@cv_example.pdf;type=application/pdf" 127.0.0.1:8000/api/upload/
 ```
