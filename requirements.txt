@@ -1,4 +1,4 @@
-Django==2.2.5
+Django==2.2.8
 djangorestframework==3.10.3
 celery==4.3.0
 psycopg2==2.8.3
